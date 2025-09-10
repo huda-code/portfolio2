@@ -3,317 +3,919 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link href="https://fonts.googleapis.com/css?family=Poppins:400,700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:500&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Nunito:800,900&display=swap" rel="stylesheet">
-    <script src="https://kit.fontawesome.com/ad9cb0368b.js" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="css/index.css">
-    <link rel="shortcut icon" href="images/h-icon.png" type="image/x-icon">
-    <title>Huda Hajira Sultana</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hajira - Portfolio</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            color: white;
+            overflow-x: hidden;
+            cursor: none;
+        }
+
+        .custom-cursor {
+            position: fixed;
+            width: 12px;
+            height: 12px;
+            background: rgba(100, 255, 218, 0.8);
+            transform: rotate(45deg);
+            pointer-events: none;
+            z-index: 9999;
+            transition: all 0.15s ease;
+            mix-blend-mode: difference;
+            border-radius: 2px;
+        }
+
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .content {
+            position: relative;
+            z-index: 2;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            padding-left: 5%;
+            position: relative;
+        }
+
+        .profile-silhouette {
+            position: absolute;
+            right: 10%;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0.15;
+            transition: opacity 0.3s ease;
+        }
+
+        .profile-silhouette:hover {
+            opacity: 0.25;
+        }
+
+        .hijabi-svg {
+            width: 200px;
+            height: 200px;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        /* Navigation dots */
+        .nav-dots {
+            position: fixed;
+            right: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .nav-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            padding: 0;
+        }
+
+        .nav-dot:hover,
+        .nav-dot.active {
+            background: rgba(100, 255, 218, 0.8);
+            transform: scale(1.2);
+        }
+
+        .hero h1 {
+            font-size: clamp(3rem, 8vw, 8rem);
+            font-weight: 100;
+            letter-spacing: -0.02em;
+            line-height: 0.9;
+            margin-bottom: 1rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease 0.5s forwards;
+        }
+
+        .hero p {
+            font-size: clamp(1.2rem, 3vw, 2rem);
+            font-weight: 300;
+            opacity: 0.8;
+            margin-bottom: 2rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease 0.8s forwards;
+        }
+
+        .hero .cta {
+            display: flex;
+            gap: 2rem;
+            margin-top: 2rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease 1.1s forwards;
+        }
+
+        .cta-link {
+            padding: 1rem 2rem;
+            background: rgba(100, 255, 218, 0.1);
+            border: 1px solid rgba(100, 255, 218, 0.3);
+            color: #64ffda;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            font-weight: 300;
+        }
+
+        .cta-link:hover {
+            background: rgba(100, 255, 218, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .section {
+            min-height: 100vh;
+            padding: 5rem 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 5vw, 4rem);
+            font-weight: 100;
+            margin-bottom: 3rem;
+            opacity: 0;
+        }
+
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .project-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            opacity: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .project-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(100, 255, 218, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .project-card:hover::before {
+            left: 100%;
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(100, 255, 218, 0.3);
+        }
+
+        .project-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            font-weight: 300;
+            color: #64ffda;
+        }
+
+        .project-card p {
+            opacity: 0.8;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .project-link {
+            color: #64ffda;
+            text-decoration: none;
+            font-weight: 300;
+            transition: opacity 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .project-link:hover {
+            opacity: 0.7;
+        }
+
+        .about-content {
+            max-width: 800px;
+            opacity: 0;
+        }
+
+        .about-content p {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .skill-item {
+            background: rgba(100, 255, 218, 0.1);
+            padding: 0.8rem 1.2rem;
+            border-radius: 25px;
+            text-align: center;
+            font-size: 0.9rem;
+            border: 1px solid rgba(100, 255, 218, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .skill-item:hover {
+            background: rgba(100, 255, 218, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .contact {
+            text-align: center;
+        }
+
+        .contact-info {
+            opacity: 0;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+
+        .contact-info a {
+            color: #64ffda;
+            text-decoration: none;
+            font-size: 1.2rem;
+            padding: 1rem 2rem;
+            border: 1px solid rgba(100, 255, 218, 0.3);
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .contact-info a:hover {
+            background: rgba(100, 255, 218, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .featured-projects {
+            margin-bottom: 3rem;
+        }
+
+        .featured-projects .project-grid {
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        }
+
+        .all-projects {
+            margin-top: 3rem;
+        }
+
+        .all-projects .project-grid {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+
+        .all-projects .project-card {
+            padding: 1.5rem;
+        }
+
+        .section-subtitle {
+            font-size: 1.5rem;
+            font-weight: 300;
+            opacity: 0.7;
+            margin-bottom: 2rem;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(-50%) translateX(0px) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-50%) translateX(5px) rotate(1deg);
+            }
+        }
+
+        .fade-in {
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        @media (max-width: 768px) {
+            .hero {
+                padding-left: 2rem;
+                text-align: center;
+                align-items: center;
+            }
+
+            .profile-silhouette {
+                position: relative;
+                right: auto;
+                top: auto;
+                transform: none;
+                margin-top: 2rem;
+                opacity: 0.1;
+            }
+
+            .hijabi-svg {
+                width: 120px;
+                height: 120px;
+            }
+
+            .content {
+                padding: 1rem;
+            }
+
+            .section {
+                padding: 3rem 0;
+            }
+
+            .nav-dots {
+                display: none;
+            }
+
+
+            .hero h1 {
+                font-size: clamp(2.5rem, 8vw, 6rem);
+            }
+
+            .hero p {
+                font-size: clamp(1rem, 4vw, 1.5rem);
+            }
+
+            .project-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .featured-projects .project-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero .cta {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .contact-info {
+                flex-direction: column;
+                align-items: center;
+                gap: 1rem;
+            }
+
+            .skills-grid {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            }
+        }
+    </style>
 </head>
 
 <body>
-    <div>
-        <div class="watermark">Hajira</div>
-        <div class="watermark">Sultana</div>
-        <div class="watermark">Huda</div>
-        <div id="header-name-ldm">
-            <h1 id="name">Huda Hajira</h1>
-            <span id="switch-ldm-logo">
-                <div id="switch-container">
-                    <img src="images/moon.svg" alt="">
+    <div class="custom-cursor"></div>
 
+    <!-- Navigation dots -->
+    <nav class="nav-dots">
+        <button class="nav-dot active" data-section="hero"></button>
+        <button class="nav-dot" data-section="work"></button>
+        <button class="nav-dot" data-section="about"></button>
+        <button class="nav-dot" data-section="contact"></button>
+    </nav>
+
+    <div id="canvas-container"></div>
+
+    <div class="content">
+        <section class="hero" id="hero">
+            <h1>Hajira</h1>
+            <p>Full-stack developer turning ideas into impactful realities.</p>
+            <div class="cta">
+                <a href="#work" class="cta-link">View My Work</a>
+                <a href="ResumeHajira.pdf" class="cta-link" target="_blank">Download Resume</a>
+            </div>
+
+            <div class="profile-silhouette">
+                <svg class="hijabi-svg" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Hijab outline -->
+                    <path
+                        d="M100 40C85 35 70 45 65 60C60 75 65 90 75 95L75 120C75 140 85 155 100 160C115 155 125 140 125 120L125 95C135 90 140 75 135 60C130 45 115 35 100 40Z"
+                        stroke="rgba(100, 255, 218, 0.6)" stroke-width="2" fill="none" />
+
+                    <!-- Face area (minimal) -->
+                    <ellipse cx="100" cy="110" rx="15" ry="25" stroke="rgba(100, 255, 218, 0.4)" stroke-width="1.5"
+                        fill="none" />
+
+                    <!-- Geometric accent -->
+                    <circle cx="85" cy="75" r="2" fill="rgba(100, 255, 218, 0.5)" />
+                    <circle cx="115" cy="75" r="2" fill="rgba(100, 255, 218, 0.5)" />
+                    <path d="M90 85 L95 90 L105 90 L110 85" stroke="rgba(100, 255, 218, 0.3)" stroke-width="1"
+                        fill="none" />
+                </svg>
+            </div>
+        </section>
+
+        <section class="section" id="work">
+            <div>
+                <h2 class="section-title">Featured Work</h2>
+                <p class="section-subtitle">AI-powered solutions and full-stack applications</p>
+
+                <div class="featured-projects">
+                    <div class="project-grid">
+                        <div class="project-card">
+                            <h3>Real Time Phishing Detection System</h3>
+                            <p>A real-time AI system to detect and prevent phishing emails using advanced machine
+                                learning techniques deployed on Hugging Face.</p>
+                            <a href="https://huggingface.co/spaces/HudaHajira/Detect_Email_Phishing"
+                                class="project-link" target="_blank">View Project →</a>
+                        </div>
+
+                        <div class="project-card">
+                            <h3>Glow-AI</h3>
+                            <p>An AI-driven skin analyzer that helps users understand their skin type through
+                                intelligent image processing and personalized recommendations.</p>
+                            <a href="https://huggingface.co/spaces/HudaHajira/glow-ai" class="project-link"
+                                target="_blank">View Project →</a>
+                        </div>
+
+                        <div class="project-card">
+                            <h3>AskMyDoc</h3>
+                            <p>An intelligent AI tool that reads documents and answers questions based solely on their
+                                content, perfect for document analysis and research.</p>
+                            <a href="https://huggingface.co/spaces/HudaHajira/Auditor" class="project-link"
+                                target="_blank">View Project →</a>
+                        </div>
+
+                        <div class="project-card">
+                            <h3>Tasky - The Task Manager</h3>
+                            <p>A full-featured MERN stack task management application with reminders, OTP-secured
+                                registration, and email notifications.</p>
+                            <a href="https://github.com/huda-code/tasky" class="project-link" target="_blank">View
+                                Project →</a>
+                        </div>
+                    </div>
                 </div>
-            </span>
-        </div>
 
-        <p id="slogan">Full Stack Web Developer</p>
+                <div class="all-projects">
+                    <h3 class="section-subtitle">All Projects</h3>
+                    <div class="project-grid">
+                        <div class="project-card">
+                            <h3>Seed-Lab 2.0 Projects</h3>
+                            <p>Comprehensive cybersecurity projects covering ciphers, buffer overflow, TCP attacks,
+                                CSRF/XSS, SQL injection, and meltdown attacks.</p>
+                            <a href="https://github.com/huda-code/seed-lab-2.0-projects" class="project-link"
+                                target="_blank">View Project →</a>
+                        </div>
 
-        <div id="go-back-button"> <i class="fas fa-chevron-left"></i> Menu</div>
-        <section id="about-me-intro-section" class="section">
-            <p>Hajira Sultana, a young and dynamic entrepreneur with a
-                passion for building successful startups from scratch. With
-                years of experience in the startup ecosystem, Hajira has
-                carved a niche for herself in the world of entrepreneurship.
-                She has founded two startups, Housepital, a health tech
-                startup, and AlphaEd, an edu-tech startup, during the 2nd
-                year of her B.tech.<br> <br>
-                As a full stack web developer with expertise in the MERN
-                stack, Hajira has built five full-stack applications. Her
-                unique combination of technical skills and entrepreneurial
-                mindset has enabled her to build innovative solutions that
-                solve real-world problems and create value for her
-                customers. Hajira's drive, determination, and expertise
-                make her a rising star in the startup ecosystem, and she is
-                poised to make a significant impact in the years to come.<br></p>
-            <!-- <p id="links"> <a href="">Get in touch</a> </p> -->
-            <a href="/images/HajiraResume.pdf" target="_blank">Resume</a>
-        
-    </section>
-    <!-- menu -->
-    <header id="menu">
-        <p id="about-me"> <a href="">About Me</a> </p>
-        <p id="skills"> <a href="">Skills</a> </p>
-        <p id="projects"> <a href="">Projects</a> </p>
-        <p id="links"> <a href="">Links</a> </p>
+                        <div class="project-card">
+                            <h3>Progress Management System</h3>
+                            <p>Advanced system that tracks student progress by integrating Google Sheets data and
+                                displaying interactive charts.</p>
+                            <a href="https://github.com/huda-code/Capstone-Project/tree/master" class="project-link"
+                                target="_blank">View Project →</a>
+                        </div>
 
-        </header>
+                        <div class="project-card">
+                            <h3>Brand New Me</h3>
+                            <p>Personal wellness coach app focused on building sustainable healthy habits tailored to
+                                individual needs.</p>
+                            <a href="https://huda-code.github.io/brandme/" class="project-link" target="_blank">View
+                                Project →</a>
+                        </div>
+
+                        <div class="project-card">
+                            <h3>AI Shayari</h3>
+                            <p>Creative AI application that generates personalized shayari (poetry) based on your mood
+                                and preferences.</p>
+                            <a href="https://huda-code.github.io/AIShayari/" class="project-link" target="_blank">View
+                                Project →</a>
+                        </div>
+
+                        <div class="project-card">
+                            <h3>EdVenture Park ERP System</h3>
+                            <p>Complete ERP solution for managing operations at EdVenture Park with comprehensive admin
+                                dashboard.</p>
+                            <a href="https://github.com/huda-code/X-hackathon" class="project-link" target="_blank">View
+                                Project →</a>
+                        </div>
+
+                        <div class="project-card">
+                            <h3>JavaScript Mini Projects</h3>
+                            <p>Collection of beginner-friendly JavaScript projects covering fundamentals and modern
+                                frameworks.</p>
+                            <a href="https://github.com/huda-code/JavaScript-Mini-Projects" class="project-link"
+                                target="_blank">View Project →</a>
+                        </div>
+                        <div class="project-card">
+                            <h3>Book Management System</h3>
+                            <p>A web app to manage book inventory and library operations efficiently.</p>
+                            <a href="https://github.com/huda-code/book-management" class="project-link"
+                                target="_blank">View Project →</a>
+                        </div>
+
+                        <div class="project-card">
+                            <h3>Midwest Pumpkins</h3>
+                            <p>Seasonal responsive website celebrating pumpkins with interactive elements, animations,
+                                and theme switching.</p>
+                            <a href="https://github.com/huda-code/Midwest-Pumpkins" class="project-link"
+                                target="_blank">View Project →</a>
+                        </div>
+
+                        <div class="project-card">
+                            <h3>Weather API</h3>
+                            <p>Weather app using OpenWeather API to fetch real-time weather and 5-day forecast for any
+                                city or location.</p>
+                            <a href="https://github.com/huda-code/WeatherAPI" class="project-link" target="_blank">View
+                                Project →</a>
+                        </div>
+
+                        <div class="project-card">
+                            <h3>Base64 Converter</h3>
+                            <p>Simple web app for encoding and decoding Base64 strings easily.</p>
+                            <a href="https://huda-code.github.io/B64/" class="project-link" target="_blank">View Project
+                                →</a>
+                        </div>
+
+                        <div class="project-card">
+                            <h3>Password Generator CLI</h3>
+                            <p>Command-line tool to generate secure random passwords.</p>
+                            <a href="https://github.com/huda-code/CLI/tree/master/Generate%20Password"
+                                class="project-link" target="_blank">View Project →</a>
+                        </div>
+
+                        <div class="project-card">
+                            <h3>Snake Game</h3>
+                            <p>Classic snake game with DOM-based controls and sound effects.</p>
+                            <a href="https://huda-code.github.io/Snake-Game./" class="project-link" target="_blank">View
+                                Project →</a>
+                        </div>
+
+                        <div class="project-card">
+                            <h3>Font Converter</h3>
+                            <p>Web tool for converting fonts between formats.</p>
+                            <a href="https://huda-code.github.io/Font-converter/" class="project-link"
+                                target="_blank">View Project →</a>
+                        </div>
+
+                        <div class="project-card">
+                            <h3>Treasure Hunt</h3>
+                            <p>An interactive treasure hunt game.</p>
+                            <a href="https://huda-code.github.io/Treasure-hunt/" class="project-link"
+                                target="_blank">View Project →</a>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="about">
+            <div>
+                <h2 class="section-title">About</h2>
+                <div class="about-content">
+                    <p>Hi, I am Hajira Sultana, a full-stack developer and entrepreneur with a passion for building
+                        impactful startups and AI-powered applications. With a Master's in Cybersecurity and extensive
+                        experience in MERN stack development, I combine technical expertise and business insight to
+                        create scalable, innovative solutions.</p>
+
+                    <p>I have successfully founded two startups and deployed multiple AI projects on Hugging Face. My
+                        journey spans from cybersecurity research to building user-friendly applications that solve
+                        real-world problems.</p>
+
+                    <p><em>"Building the future, one line of code at a time."</em></p>
+
+                    <h3 style="font-size: 1.5rem; margin: 2rem 0 1rem 0; color: #64ffda;">Technical Skills</h3>
+                    <div class="skills-grid">
+                        <div class="skill-item">Next.js</div>
+                        <div class="skill-item">React</div>
+                        <div class="skill-item">Node.js</div>
+                        <div class="skill-item">MongoDB</div>
+                        <div class="skill-item">Python</div>
+                        <div class="skill-item">JavaScript</div>
+                        <div class="skill-item">TypeScript</div>
+                        <div class="skill-item">Django</div>
+                        <div class="skill-item">Docker</div>
+                        <div class="skill-item">Linux</div>
+                        <div class="skill-item">Git</div>
+                        <div class="skill-item">CSS3/SASS</div>
+                        <div class="skill-item">HTML5</div>
+                        <div class="skill-item">Bash</div>
+                        <div class="skill-item">C++</div>
+                        <div class="skill-item">jQuery</div>
+                        <div class="skill-item">PHP</div>
+                        <div class="skill-item">GitHub</div>
+                        <div class="skill-item">Visual Studio</div>
+                        <div class="skill-item">Postman</div>
+                        <div class="skill-item">Hugging Face</div>
+                        <div class="skill-item">Wireshark</div>
+                        <div class="skill-item">Burp Suite</div>
+                        <div class="skill-item">Nmap</div>
+                        <div class="skill-item">Metasploit</div>
+                    </div>
+
+                    <h3 style="font-size: 1.5rem; margin: 2rem 0 1rem 0; color: #64ffda;">When I'm Not Coding</h3>
+                    <p>You'll find me building startups, exploring AI & Machine Learning, reading tech blogs, or
+                        enjoying creative hobbies like crochet, cross stitching, and calligraphy.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section contact" id="contact">
+            <div>
+                <h2 class="section-title">Let's Connect</h2>
+                <p style="font-size: 1.2rem; opacity: 0.8; margin-bottom: 2rem;">Ready to turn your ideas into impactful
+                    digital realities?</p>
+                <div class="contact-info">
+                    <a href="mailto:code.huda@gmail.com">Email</a>
+                     <a href="linkedin.com/in/hudahajira" target="_blank">Linkedin</a>
+                    <a href="https://github.com/huda-code" target="_blank">GitHub</a>
+                    <a href="https://twitter.com/hudahajira" target="_blank">Twitter</a>
+                    <a href="https://instagram.com/huda.code" target="_blank">Instagram</a>
+                </div>
+            </div>
+        </section>
     </div>
 
-    <main>
+    <script>
+        // Three.js setup
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
 
-    <!-- About me -->
-  
-    <section id="about-me-section" class="section">
-			<h2>About me</h2>
-            <p>Hajira Sultana, a young and dynamic entrepreneur with a
-                passion for building successful startups from scratch. With
-                years of experience in the startup ecosystem, Hajira has
-                carved a niche for herself in the world of entrepreneurship.
-                She has founded two startups, Housepital, a health tech
-                startup, and AlphaEd, an edu-tech startup, during the 2nd
-                year of her B.tech.<br> <br>
-                As a full stack web developer with expertise in the MERN
-                stack, Hajira has built five full-stack applications. Her
-                unique combination of technical skills and entrepreneurial
-                mindset has enabled her to build innovative solutions that
-                solve real-world problems and create value for her
-                customers. Hajira's drive, determination, and expertise
-                make her a rising star in the startup ecosystem, and she is
-                poised to make a significant impact in the years to come.<br></p>
-			<!-- <a href="https://app.luminpdf.com/viewer/64aad26f3243f1982c8d2b48" target="_blank"> Resume</a></p> -->
-            <p> <a href="/images/HajiraResume.pdf" target="_blank">Resume</a></p>
-            <!-- <p><a href="mailto:code.huda@gmail.com"> Get in touch</a></p> -->
-    </section>
-    
-    <!-- Skills -->
-    <section id="skills-section" class="section">
-        <h2>Skills</h2>
-        <article>
-            <section>                                                                                                                               
-                <h4>Programmings languages <img class="section-logos" src="./images/programming.svg"></h4>
-                <ul>
-                    <li skill-description="Javascript"><object type="image/svg+xml" data="images/javascript.svg"></object>JavaScript</li>
-                    <!-- <li skill-description="php"><object type="image/svg+xml" data="images/php.svg"></object>PHP</li> -->
-                    <!-- <li skill-description="Java"><object type="image/svg+xml" data="images/python.svg"></object>Python</li> -->
-                    <!-- <li skill-description="Java"><object type="image/svg+xml" data="images/java.svg"></object>Java</li> -->
-                    <!-- <li skill-description="Java"><object type="image/svg+xml" data="images/dart.svg"></object>Dart</li> -->
-                    <!-- <li skill-description="Java"><object type="image/svg+xml" data="images/go.svg"></object>Go</li> -->
-                </ul>
-                
-            </section>
-            <section>
-                <h4>Web Frontend<img class="section-logos" src="./images/frontend.svg"></h4>
-                <ul>
-                    <li skill-description="HTML 5"><object type="image/svg+xml" data="images/html5.svg" class="svg-logos"></object>HTML</li>
-                    <li skill-description="CSS"><object type="image/svg+xml" data="images/css3.svg"></object>CSS</li>
-                    <li skill-description="Sass"><object type="image/svg+xml" data="images/react.svg"></object>React</li>
-                    <li skill-description="Bootstrap"><object type="image/svg+xml" data="images/bootstrap.svg"></object>Bootstrap</li>
-                    <!-- <li skill-description="JQuery"><object type="image/svg+xml" data="images/jquery.svg"></object>Jquery</li> -->
-                    <!-- <li skill-description="Sass"><object type="image/svg+xml" data="images/sass.svg"></object>Sass</li> -->
-                </ul>
-            </section> 
-            
-            <section>
-                <h4>Web Backend <img class="section-logos" src="./images/backend.svg"></h4>
-                <ul>
-                    <li skill-description="Node"> <li skill-description="Sass"><object type="image/svg+xml" data="images/node-dot-js.svg"></object>Node</li>
-                    <li skill-description="express"><object type="image/svg+xml" data="images/node-dot-js.svg"></object>Express</li>
-                    <!-- <li skill-description="Laravel"><object type="image/svg+xml" data="images/laravel.svg"></object>Laravel</li> -->
-                    <!-- <li skill-description="Django"><object type="image/svg+xml" data="images/django.svg"></object>Django</li> -->
-                    <!-- <li skill-description="Flask"><object type="image/svg+xml" data="images/flask.svg"></object>Flask</li> -->
-                </ul>
-                
-            </section>
-            
-            <!-- <section>
-                <h4>Mobile <img class="section-logos" src="./images/phone.svg"></h4>
-                <ul>
-                    <li  skill-description="react-native"><object type="image/svg+xml" data="images/react.svg"></object>React native</li>
-                </ul>
-            </section>  -->
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0x000000, 0);
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
 
-                <!-- <section>
-                <h4>Desktop <img class="section-logos" src="./images/desktop.svg"></h4>
-                <ul>
-                    <li  skill-description="Electron"><object type="image/svg+xml" data="images/electron.svg"></object>Electron</li>
-                    <li  skill-description="Tkinter"><object type="image/svg+xml" data="images/python.svg"></object>Tkinter</li>
-                    <li  skill-description="JavaFx"><object type="image/svg+xml" data="images/java.svg"></object>JavaFx</li>
-                </ul>
-            </section>  -->
+        // Create floating geometric shapes
+        const shapes = [];
+        const geometries = [
+            new THREE.BoxGeometry(1, 1, 1),
+            new THREE.SphereGeometry(0.5, 16, 16),
+            new THREE.ConeGeometry(0.5, 1, 8),
+            new THREE.TetrahedronGeometry(0.7),
+            new THREE.OctahedronGeometry(0.6)
+        ];
 
-                <section>
-                    <h4>Databases<img class="section-logos" src="./images/database.svg"></h4>
-                    <ul>
-                        <!-- <li  skill-description="Mysql"><object type="image/svg+xml" data="images/mysql.svg"></object>Mysql</li> -->
-                        <li skill-description="mongodb"><object type="image/svg+xml"
-                                data="images/mongodb.svg"></object>Mongodb</li>
-                        <!-- <li  skill-description="Oracle"><object type="image/svg+xml" data="images/oracle.svg"></object>Oracle</li> -->
-                    </ul>
-                </section>
-                <section>
-                    <h4>Other tools <img class="section-logos" src="./images/tools.svg"></h4>
-                    <ul>
-                        <!-- <li skill-description="Git"><object type="image/svg+xml" data="images/git.svg"></object>Git</li> -->
-                        <li skill-description="Github"><object type="image/svg+xml"
-                                data="images/github.svg"></object>Github</li>
-                        <li skill-description="Visual Studio Code"><object type="image/svg+xml"
-                                data="images/visualstudiocode.svg"></object>VScode</li>
-                        <li skill-description="Terminal"><object type="image/svg+xml"
-                                data="images/gnubash.svg"></object>Unix Shells (Bash/zsh)</li>
-                    </ul>
-                </section>
-                <section>
-                    <h4>Human languages <img class="section-logos" src="./images/languages.svg"></h4>
-                    <ul>
-                        <li>English</li>
-                        <li>Hindi</li>
-                        <li>Urdu</li>
-                    </ul>
-                </section>
-            </article>
+        // Create materials with different colors
+        const materials = [
+            new THREE.MeshBasicMaterial({ color: 0x64ffda, wireframe: true }),
+            new THREE.MeshBasicMaterial({ color: 0xff6b6b, wireframe: true }),
+            new THREE.MeshBasicMaterial({ color: 0x4ecdc4, wireframe: true }),
+            new THREE.MeshBasicMaterial({ color: 0xffe66d, wireframe: true }),
+            new THREE.MeshBasicMaterial({ color: 0xa8e6cf, wireframe: true })
+        ];
 
-        </section>
+        // Create multiple shapes
+        for (let i = 0; i < 18; i++) {
+            const geometry = geometries[Math.floor(Math.random() * geometries.length)];
+            const material = materials[Math.floor(Math.random() * materials.length)];
+            const shape = new THREE.Mesh(geometry, material);
 
-        <section id="projects-section" class="section">
-            <!-- will add tags to each project-->
-            <div id="projects-wrapper">
-                <div>
-                    <div>
-                        <h3>
-                            <a href="https://github.com/huda-code/tasky" target="_blank"> Tasky Application</a>
-                            <br>
-                            <em> -Created a Full stack application, <br> for managing tasks
-                                which will,<br> send automated reminder
-                                SMS <br>and reminder Emails<br></em>
-                        </h3>
+            // Random positions
+            shape.position.x = (Math.random() - 0.5) * 25;
+            shape.position.y = (Math.random() - 0.5) * 25;
+            shape.position.z = (Math.random() - 0.5) * 12;
 
-                        <div class="tags">
-                            <!-- <span>PHP</span> -->
-                            <span>HTML</span>
-                            <span>CSS</span>
-                            <span>JavaScript</span>
-                            <span>Mongodb</span>
-                            <span>Express</span>
-                            <span>Node.JS</span>
-                            <!-- <span>Mysql</span> -->
-                        </div>
-                    </div>
-                    <img src="images/kaytouki.png" alt="">
+            // Random rotation speeds
+            shape.rotationSpeed = {
+                x: (Math.random() - 0.5) * 0.02,
+                y: (Math.random() - 0.5) * 0.02,
+                z: (Math.random() - 0.5) * 0.02
+            };
 
-                </div>
-                <!-- ......................................... -->
-                <div>
-                    <div>
-                        <h3> <a href="https://huda-code.github.io/Treasure-hunt/" target="_blank"> Treasure Hunt
-                                Game</a>
-                            <br>
-                            <em>-
-                                Website Created a game using <br>Dom, Html, and CSS</em>
-                        </h3>
+            // Random scale
+            const scale = Math.random() * 0.6 + 0.4;
+            shape.scale.set(scale, scale, scale);
 
-                        <div class="tags">
-                            <!-- <span>Python</span> -->
-                            <span>HTML</span>
-                            <span>CSS</span>
-                            <!-- <span>Django</span> -->
-                            <span>Javascript</span>
-                            <span>DOM</span>
-                        </div>
-                    </div>
-                    <img src="images/logorain.png" alt="">
+            shapes.push(shape);
+            scene.add(shape);
+        }
 
-                </div>
-                <!-- ............................................... -->
-                <div>
-                    <div>
-                        <h3>
-                            <a href="https://github.com/huda-code/book-management" target="_blank"> Book Management
-                                System</a>
-                            <br>
-                            <em> -Created a Full stack application <br>that will help you to Manage <br>your
-                                bookshelf,you can add,<br>
-                                edit and delete books</em>
-                        </h3>
+        camera.position.z = 10;
 
-                        <div class="tags">
-                            <!-- <span>PHP</span> -->
-                            <span>HTML</span>
-                            <span>CSS</span>
-                            <span>JavaScript</span>
-                            <span>Mongodb</span>
-                            <span>Express</span>
-                            <span>Node.JS</span>
-                            <!-- <span>Mysql</span> -->
-                        </div>
-                    </div>
-                    <img src="images/kaytouki.png" alt="">
+        // Mouse interaction
+        const mouse = { x: 0, y: 0 };
+        const target = { x: 0, y: 0 };
 
-                </div>
-                <!-- .................................................... -->
-                <div>
-                    <div>
-                        <h3>
-                            <a href="https://github.com/huda-code/Capstone-Project " target="_blank"> Progress
-                                Management System</a>
-                            <br>
-                            <em> -Created a Full Stack Application<br> that will automate the process of<br> progress
-                                cards at school,
-                                and <br>the result cards will be displayed<br> in the form of charts</em>
-                        </h3>
+        document.addEventListener('mousemove', (event) => {
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+        });
 
-                        <div class="tags">
-                            <!-- <span>PHP</span> -->
-                            <span>Bootstrap</span>
-                            <span>Chart.JS</span>
-                            <span>JavaScript</span>
-                            <span>Mongodb</span>
-                            <span>Express</span>
-                            <span>Node.JS</span>
-                            <!-- <span>Mysql</span> -->
-                        </div>
-                    </div>
-                    <img src="images/kaytouki.png" alt="">
+        // Custom cursor with rotation
+        const cursor = document.querySelector('.custom-cursor');
+        let mouseX = 0, mouseY = 0;
+        let cursorX = 0, cursorY = 0;
+        let rotation = 0;
 
-                </div>
-            </div>
-        </section>
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
 
-        <!-- Links -->
-        <section id="links-section" class="section">
+        function updateCursor() {
+            // Smooth following
+            cursorX += (mouseX - cursorX) * 0.1;
+            cursorY += (mouseY - cursorY) * 0.1;
 
-            <h2>Links</h2>
-            <div>
-                <a href="mailto:code.huda@gmail.com" description="Mail"><i class="fas fa-envelope"
-                        onmouseover='displayDescriptionOnLinks("fa-envelope");'></i>
-                    mail</a>
+            // Calculate rotation based on movement
+            const deltaX = mouseX - cursorX;
+            const deltaY = mouseY - cursorY;
+            rotation += (Math.atan2(deltaY, deltaX) * 180 / Math.PI - rotation) * 0.1;
 
-                <a href="https://www.linkedin.com/in/hudahajira" description="Linkedin"><i class="fab fa-linkedin-in">
-                    </i>
-                    linkedin</a>
+            cursor.style.left = cursorX + 'px';
+            cursor.style.top = cursorY + 'px';
+            cursor.style.transform = `rotate(${rotation + 45}deg)`;
 
-                <a href="https://github.com/huda-code" description="Github"><i class="fab fa-github"></i>
-                    github</a>
-                <!-- <a href="https://stackoverflow.com/users/6744380/ziyadsk" description="StackOverflow"><i class="fab fa-stack-overflow" ></i>
-                    stackoverflow</a> -->
-                <a href=" https://instagram.com/huda.code?igshid=NTc4MTIwNjQ2YQ==" description="Instagram"><i
-                        class="fab fa-instagram" ;>
-                    </i> Instagram</a>
-                <a href="https://twitter.com/hudahajira" description="Twitter"><i class="fab fa-twitter"></i>
-                    twitter</a>
+            requestAnimationFrame(updateCursor);
+        }
 
+        updateCursor();
 
-            </div>
-            </div>
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
 
-        </section>
-    </main>
+            // Smooth mouse following
+            target.x += (mouse.x - target.x) * 0.05;
+            target.y += (mouse.y - target.y) * 0.05;
 
+            // Update camera position based on mouse
+            camera.position.x += (target.x * 2 - camera.position.x) * 0.05;
+            camera.position.y += (target.y * 2 - camera.position.y) * 0.05;
+            camera.lookAt(scene.position);
+
+            // Rotate shapes
+            shapes.forEach((shape) => {
+                shape.rotation.x += shape.rotationSpeed.x;
+                shape.rotation.y += shape.rotationSpeed.y;
+                shape.rotation.z += shape.rotationSpeed.z;
+
+                // Add subtle floating movement
+                shape.position.y += Math.sin(Date.now() * 0.001 + shape.position.x) * 0.002;
+            });
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Navigation dots functionality
+        const navDots = document.querySelectorAll('.nav-dot');
+        const sections = document.querySelectorAll('section[id]');
+
+        // Click navigation
+        navDots.forEach(dot => {
+            dot.addEventListener('click', () => {
+                const targetSection = dot.getAttribute('data-section');
+                document.getElementById(targetSection).scrollIntoView();
+            });
+        });
+
+        // Update active dot on scroll
+        const updateActiveDot = () => {
+            const scrollPos = window.scrollY + window.innerHeight / 2;
+
+            sections.forEach((section, index) => {
+                const sectionTop = section.offsetTop;
+                const sectionBottom = sectionTop + section.offsetHeight;
+
+                if (scrollPos >= sectionTop && scrollPos < sectionBottom) {
+                    navDots.forEach(dot => dot.classList.remove('active'));
+                    navDots[index].classList.add('active');
+                }
+            });
+        };
+
+        window.addEventListener('scroll', updateActiveDot);
+
+        // Scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fade-in');
+                }
+            });
+        }, observerOptions);
+
+        // Observe all sections and project cards
+        document.querySelectorAll('.section-title, .project-card, .about-content, .contact-info, .section-subtitle').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Hover effects for interactive elements
+        document.querySelectorAll('.project-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                cursor.style.transform = `rotate(${rotation + 45}deg) scale(1.5)`;
+                cursor.style.backgroundColor = 'rgba(255, 107, 107, 0.8)';
+            });
+
+            card.addEventListener('mouseleave', () => {
+                cursor.style.transform = `rotate(${rotation + 45}deg) scale(1)`;
+                cursor.style.backgroundColor = 'rgba(100, 255, 218, 0.8)';
+            });
+        });
+
+        // Hover effects for nav dots
+        navDots.forEach(dot => {
+            dot.addEventListener('mouseenter', () => {
+                cursor.style.transform = `rotate(${rotation + 45}deg) scale(1.8)`;
+                cursor.style.backgroundColor = 'rgba(100, 255, 218, 0.9)';
+            });
+
+            dot.addEventListener('mouseleave', () => {
+                cursor.style.transform = `rotate(${rotation + 45}deg) scale(1)`;
+                cursor.style.backgroundColor = 'rgba(100, 255, 218, 0.8)';
+            });
+        });
+
+        // Hover effects for CTA buttons and links
+        document.querySelectorAll('.cta-link, .contact-info a').forEach(link => {
+            link.addEventListener('mouseenter', () => {
+                cursor.style.transform = `rotate(${rotation + 45}deg) scale(1.8)`;
+                cursor.style.backgroundColor = 'rgba(255, 230, 109, 0.8)';
+            });
+
+            link.addEventListener('mouseleave', () => {
+                cursor.style.transform = `rotate(${rotation + 45}deg) scale(1)`;
+                cursor.style.backgroundColor = 'rgba(100, 255, 218, 0.8)';
+            });
+        });
+
+        // Hover effect for the profile silhouette
+        document.querySelector('.profile-silhouette')?.addEventListener('mouseenter', () => {
+            cursor.style.transform = `rotate(${rotation + 45}deg) scale(2)`;
+            cursor.style.backgroundColor = 'rgba(255, 230, 109, 0.8)';
+        });
+
+        document.querySelector('.profile-silhouette')?.addEventListener('mouseleave', () => {
+            cursor.style.transform = `rotate(${rotation + 45}deg) scale(1)`;
+            cursor.style.backgroundColor = 'rgba(100, 255, 218, 0.8)';
+        });
+    </script>
 </body>
-
-
-<script src="js/index.js"></script>
 
 </html>
