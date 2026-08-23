@@ -10,6 +10,111 @@
     <meta property="og:url" content="https://hudahajira.com/">
     <title>Hajira Sultana (Huda) — Engineer, Researcher & Builder</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Responsive overrides */
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .hero > *,
+        .hero-right {
+            min-width: 0;
+        }
+
+        .portrait {
+            width: 100%;
+            max-width: 480px;
+            height: auto;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            object-position: center;
+        }
+
+        @media (max-width: 1020px) {
+            .hero {
+                grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            }
+
+            .hero-menu a {
+                min-width: 0;
+                padding-inline: 8px;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .site-width {
+                width: auto;
+                max-width: none;
+                margin-inline: 20px;
+            }
+
+            .hero {
+                display: flex;
+                flex-direction: column;
+                padding-top: 16px;
+                padding-bottom: 42px;
+            }
+
+            .portrait {
+                width: 100%;
+                max-width: none;
+                height: auto;
+                aspect-ratio: auto;
+                object-fit: contain;
+            }
+
+            .hero-right {
+                width: 100%;
+            }
+
+            h1 {
+                font-size: clamp(42px, 13vw, 56px);
+                overflow-wrap: anywhere;
+            }
+
+            .hero-menu {
+                width: 100%;
+            }
+
+            .bio {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .topbar {
+                height: auto;
+                min-height: 64px;
+                padding: 14px 16px;
+            }
+
+            .logo {
+                line-height: 1.25;
+            }
+
+            .site-width {
+                margin-inline: 16px;
+            }
+
+            .hero-menu {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-menu a {
+                min-height: 44px;
+                height: auto;
+            }
+
+            h2 {
+                font-size: 28px;
+            }
+
+            .plain-list {
+                padding-left: 20px;
+            }
+        }
+    </style>
 </head>
 <body>
     <header class="topbar">
@@ -30,6 +135,9 @@
     class="portrait"
     src="HAJIRASULTANA.jpg"
     alt="Hajira Sultana"
+    width="480"
+    height="480"
+    fetchpriority="high"
 >
             <div class="hero-right">
                 <h1>Huda<br>Hajira</h1>
