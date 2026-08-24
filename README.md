@@ -1,7 +1,9 @@
 # Huda Hajira
 
-This is my personal portfolio website, where I share my experience, projects, research, speaking engagements, and community work.
+My personal portfolio showcasing my work across AI, cybersecurity, robotics, open source, research and community building.
 
-Website: [hudahajira.com](https://hudahajira.com)
+I’m especially interested in secure physical AI, agentic systems, neuro-robotics and technology that connects intelligent software with the physical world.
 
-Built with HTML and CSS.
+Explore my projects, professional experience, research, speaking engagements and community initiatives at [hudahajira.com](https://hudahajira.com).
+
+Built with HTML, CSS and JavaScript.
